@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import AddStaff from "../components/AddStaff";
 import AuthContext from "../AuthContext";
-import UpdateMaterial from "../components/UpdateMaterial";
+import UpdateStaff from "../components/UpdateStaff";
 import axios from "axios";
 import { BASE_URL } from "../config";
 
@@ -246,43 +246,43 @@ function Staff() {
                   Staff Name
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                No Of Day Working
+                  No Of Day Working
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                Fesivel Holiday
+                  Fesivel Holiday
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                Total Days
+                  Total Days
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                OT Hours
+                  OT Hours
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                PER Day Wages 
+                  PER Day Wages
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                Salary To Be
+                  Salary To Be
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                PER Hour
+                  PER Hour
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   OT
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                Month
+                  Month
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                Total Salary 
+                  Total Salary
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                Food Advance
+                  Food Advance
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                Balance E-Pay
+                  Balance E-Pay
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                Remark
+                  Remark
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Action
@@ -291,7 +291,7 @@ function Staff() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {Material.map((element, index) => {
+              {Staff.map((element, index) => {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">

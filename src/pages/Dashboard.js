@@ -37,6 +37,9 @@ function Dashboard() {
   const [purchaseAmount, setPurchaseAmount] = useState("");
   const [stores, setStores] = useState([]);
   const [products, setProducts] = useState([]);
+  const [staff, setStaff] = useState([]);
+  const [material, setMaterial] = useState([]);
+
 
   const [chart, setChart] = useState({
     options: {
@@ -88,6 +91,8 @@ function Dashboard() {
     fetchTotalPurchaseAmount();
     fetchStoresData();
     fetchProductsData();
+    fetchStaffData();
+    fetchMaterialData();
     fetchMonthlySalesData();
   }, []);
 
@@ -119,7 +124,18 @@ function Dashboard() {
       .then((datas) => setProducts(datas))
       .catch((err) => console.log(err));
   };
-
+  const fetchStaffData = () => {
+    fetch(BASE_URL + `api/staff/get/${authContext.user}`)
+      .then((response) => response.json())
+      .then((datas) => setStaff(datas))
+      .catch((err) => console.log(err));
+  };
+  const fetchMaterialData = () => {
+    fetch(BASE_URL + `api/material/get/${authContext.user}`)
+      .then((response) => response.json())
+      .then((datas) => setMaterial(datas))
+      .catch((err) => console.log(err));
+  };
   // Fetching Monthly Sales
   const fetchMonthlySalesData = () => {
     fetch(BASE_URL + `api/sales/getmonthly`)
@@ -147,60 +163,23 @@ function Dashboard() {
                 d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
               />
             </svg>
-
-            <span className="text-xs font-medium"> 67.81% </span>
           </div>
 
           <div>
             <strong className="block text-sm font-medium text-gray-500">
-              Sales
-            </strong>
-
-            <p>
-              <span className="text-2xl font-medium text-gray-900">
-                ${saleAmount}
-              </span>
-
-              <span className="text-xs text-gray-500"> from $240.94 </span>
-            </p>
-          </div>
-        </article>
-
-        <article className="flex flex-col  gap-4 rounded-lg border border-gray-100 bg-white p-6 ">
-          <div className="inline-flex gap-2 self-end rounded bg-red-100 p-1 text-red-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
-              />
-            </svg>
-
-            <span className="text-xs font-medium"> 67.81% </span>
-          </div>
-
-          <div>
-            <strong className="block text-sm font-medium text-gray-500">
-              Purchase
+              Material
             </strong>
 
             <p>
               <span className="text-2xl font-medium text-gray-900">
                 {" "}
-                ${purchaseAmount}{" "}
+                {material.length}{" "}
               </span>
-
-              <span className="text-xs text-gray-500"> from $404.32 </span>
             </p>
           </div>
         </article>
+
+       
         <article className="flex flex-col   gap-4 rounded-lg border border-gray-100 bg-white p-6 ">
           <div className="inline-flex gap-2 self-end rounded bg-red-100 p-1 text-red-600">
             <svg
@@ -217,17 +196,15 @@ function Dashboard() {
                 d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
               />
             </svg>
-
-            <span className="text-xs font-medium"> 67.81% </span>
           </div>
 
           <div>
-            <strong className="block text-sm font-medium text-gray-500">
-              Total Products
+            <strong className="block text-sm font-medium text-gray-500 ">
+              Total Stock
             </strong>
 
             <p>
-              <span className="text-2xl font-medium text-gray-900">
+              <span className="text-2xl font-medium text-gray-900 text-center">
                 {" "}
                 {products.length}{" "}
               </span>
@@ -252,26 +229,24 @@ function Dashboard() {
                 d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
               />
             </svg>
-
-            <span className="text-xs font-medium"> 67.81% </span>
           </div>
 
           <div>
             <strong className="block text-sm font-medium text-gray-500">
-              Total Stores
+              Total Staff
             </strong>
 
             <p>
               <span className="text-2xl font-medium text-gray-900">
                 {" "}
-                {stores.length}{" "}
+                {staff.length}{" "}
               </span>
 
               {/* <span className="text-xs text-gray-500"> from 0 </span> */}
             </p>
           </div>
         </article>
-        <div className="flex justify-around bg-white rounded-lg py-8 col-span-full justify-center">
+        {/* <div className="flex justify-around bg-white rounded-lg py-8 col-span-full justify-center">
           <div>
             <Chart
               options={chart.options}
@@ -283,7 +258,7 @@ function Dashboard() {
           <div>
             <Doughnut data={data} />
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );

@@ -15,6 +15,7 @@ import Sales from "./pages/Sales";
 import PurchaseDetails from "./pages/PurchaseDetails";
 import Material from "./pages/Material";
 import Employee from "./pages/Employee";
+import Staff from "./pages/Staff";
 
 const App = () => {
   useEffect(() => {
@@ -87,6 +88,7 @@ const App = () => {
             <Route path="/purchase-details" element={<PurchaseDetails />} />
             <Route path="/material" element={<Material />} />
             <Route path="/employee" element={<Employee />} />
+            <Route path="/staff" element={<Staff />} />
 
             <Route path="/sales" element={<Sales />} />
             <Route path="/manage-store" element={<Store />} />
