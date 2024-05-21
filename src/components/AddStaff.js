@@ -2,46 +2,50 @@ import { Fragment, useContext, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
-import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
-export default function AddProduct({
-  addProductModalSetting,
+export default function AddStaff({
+  addStaffModalSetting,
   handlePageUpdate,
 }) {
   const authContext = useContext(AuthContext);
-  const [product, setProduct] = useState({
+  const [staff, setStaff] = useState({
     userId: authContext.user,
-    name: "",
-    date: "",
-    category: "",
-    quantity: "",
-    units: "",
-    stock: "",
-    cstock: "",
-    description: "",
+    
+    sname: "",
+    nodwork: "",
+    festivelh: "",
+    totaldays: "",
+    otdays: "",
+    wages: "",
+    salarytobe: "",
+    perhour: "",
+    ot:"",
+    month:"",
+    totalsalary:"",
+    foodadv:"",
+    balanceepay:"",
+    remark:"",
   });
-  console.log("----", product);
+  console.log("----", staff);
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
-  const navigate = useNavigate();
 
   const handleInputChange = (key, value) => {
-    setProduct({ ...product, [key]: value });
+    setStaff({ ...staff, [key]: value });
   };
 
-  const addProduct = () => {
-    fetch(BASE_URL + `api/product/add`, {
+  const addStaff= () => {
+    fetch(BASE_URL + `api/staff/add`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify(product),
+      body: JSON.stringify(staff),
     })
       .then((result) => {
-        alert("Product ADDED");
+        alert("Staff ADDED");
         handlePageUpdate();
-        addProductModalSetting();
-        navigate(0);
+        addStaffModalSetting();
       })
       .catch((err) => console.log(err));
   };
@@ -92,7 +96,7 @@ export default function AddProduct({
                         as="h3"
                         className="text-lg font-semibold leading-6 text-gray-900 "
                       >
-                        Stock Management
+                        Add Staff
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
@@ -101,13 +105,13 @@ export default function AddProduct({
                               htmlFor="name"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              Date
+                              Name
                             </label>
                             <input
-                              type="date"
-                              name="date"
-                              id="date"
-                              value={product.date}
+                              type="text"
+                              name="sname"
+                              id="sname"
+                              value={staff.sname}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
@@ -120,18 +124,18 @@ export default function AddProduct({
                               htmlFor="name"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              Stock Supplier Name
+                              No Of Day Working
                             </label>
                             <input
                               type="text"
-                              name="name"
-                              id="name"
-                              value={product.name}
+                              name="nodwork"
+                              id="nodwork"
+                              value={staff.nodwork}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Stock Supplier Name"
+                              placeholder="No Day Work"
                             />
                           </div>
                           <div>
@@ -139,18 +143,18 @@ export default function AddProduct({
                               htmlFor="manufacturer"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              Stock Category Name
+                              Fesivel Holiday
                             </label>
                             <input
                               type="text"
-                              name="category"
-                              id="category"
-                              value={product.category}
+                              name="festivelh"
+                              id="festivelh"
+                              value={staff.festivelh}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Stock Category Name"
+                              placeholder="Festivel Holidays"
                             />
                           </div>
                           <div>
@@ -158,18 +162,18 @@ export default function AddProduct({
                               for="price"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              Units
+                              Total Days
                             </label>
                             <input
                               type="number"
-                              name="units"
-                              id="units"
-                              value={product.units}
+                              name="totaldays"
+                              id="totaldays"
+                              value={staff.totaldays}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="100"
+                              placeholder="Total Days"
                             />
                           </div>
                           <div>
@@ -177,18 +181,18 @@ export default function AddProduct({
                               for="quantity"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              Quantity
+                              OT Hours
                             </label>
                             <input
                               type="number"
-                              name="quantity"
-                              id="quantity"
-                              value={product.quantity}
+                              name="otdays"
+                              id="otdays"
+                              value={staff.otdays}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="0 - 999"
+                              placeholder="OT Hours"
                             />
                           </div>
                           <div>
@@ -196,18 +200,18 @@ export default function AddProduct({
                               for="quantity"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              Current Stock
+                              PER Day Wages 
                             </label>
                             <input
                               type="number"
-                              name="cstock"
-                              id="cstock"
-                              value={product.cstock}
+                              name="wages"
+                              id="wages"
+                              value={staff.wages}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="0 - 999"
+                              placeholder="Wages"
                             />
                           </div>
                           <div>
@@ -215,54 +219,154 @@ export default function AddProduct({
                               for="quantity"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              Stock
+                              Salary To Be
                             </label>
-                            <select
-                              id="stock"
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="stock"
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                            >
-                              <option value="">Select Products</option>
-                              <option value="Inwards">Inwards</option>
-                              <option value="Outwards">Outwards</option>
-                            </select>
-                            {/* <input
+                            <input
                               type="number"
-                              name="quantity"
-                              id="quantity"
-                              value={product.quantity}
+                              name="salarytobe"
+                              id="salarytobe"
+                              value={staff.salarytobe}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="0 - 999"
-                            /> */}
+                              placeholder="Salary To Be"
+                            />
                           </div>
-
-                          <div className="sm:col-span-2">
+                          <div>
                             <label
-                              htmlFor="description"
+                              for="quantity"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              Description Of Good
+                              PER Hour
                             </label>
                             <input
-                             type="text"
-                             name="description"
-                             id="description"
-                             value={product.cstdescriptionock}
-                             onChange={(e) =>
-                               handleInputChange(e.target.name, e.target.value)
-                             }
-                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                             placeholder="Description"
-                            >
-                            </input>
-                           
+                              type="number"
+                              name="perhour"
+                              id="perhour"
+                              value={staff.perhour}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Per Hour"
+                            />
                           </div>
+                          <div>
+                            <label
+                              for="quantity"
+                              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                              OT
+                            </label>
+                            <input
+                              type="number"
+                              name="ot"
+                              id="ot"
+                              value={staff.ot}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="OT"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              for="quantity"
+                              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                              Month
+                            </label>
+                            <input
+                              type="number"
+                              name="month"
+                              id="month"
+                              value={staff.month}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Month"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              for="quantity"
+                              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                              Total Salary 
+                            </label>
+                            <input
+                              type="number"
+                              name="totalsalary"
+                              id="totalsalary"
+                              value={staff.totalsalary}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Total Salary "
+                            />
+                          </div>
+                          <div>
+                            <label
+                              for="quantity"
+                              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                              Food Advance
+                            </label>
+                            <input
+                              type="number"
+                              name="foodadv"
+                              id="foodadv"
+                              value={staff.foodadv}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="OT"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              for="quantity"
+                              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                            Balance E-Pay
+                            </label>
+                            <input
+                              type="number"
+                              name="balanceepay"
+                              id="balanceepay"
+                              value={staff.balanceepay}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="OT"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              for="quantity"
+                              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            >
+                              Remark
+                            </label>
+                            <input
+                              type="number"
+                              name="remark"
+                              id="remark"
+                              value={staff.remark}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Remark"
+                            />
+                          </div>
+                         
                         </div>
                         <div className="flex items-center space-x-4">
                           {/* <button
@@ -298,14 +402,14 @@ export default function AddProduct({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={addProduct}
+                    onClick={addStaff}
                   >
-                    Add Stock
+                    Add Material
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => addProductModalSetting()}
+                    onClick={() => addStaffModalSetting()}
                     ref={cancelButtonRef}
                   >
                     Cancel
