@@ -161,11 +161,11 @@ function Login() {
                 Sign in
               </button>
               <p className="mt-2 text-center text-sm text-gray-600">
-                Developed by © APS Infotech Solutions <br />
-                <b> Contact:</b>
+                Developed by © Sureshkumar <br />
+                {/* <b> Contact:</b>
                 <span className="font-medium text-indigo-600 hover:text-indigo-500">
                   <Link to="">+91 9944449446 </Link>
-                </span>
+                </span> */}
               </p>
               {/* <p className="mt-2 text-center text-sm text-gray-600">
                 Or{" "}

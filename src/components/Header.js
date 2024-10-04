@@ -38,7 +38,7 @@ export default function Header() {
                           alt="Inventory Management System"
                         />
                         <span className="font-bold text-white italic">
-                          APS Stock Management System
+                         Stock Management System
                         </span>
                       </div>
                     </div>
@@ -49,7 +49,7 @@ export default function Header() {
                         type="button"
                         className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                       >
-                        <span className="sr-only">View notifications</span>
+                        <span className="sr-only">View Notifications</span>
                         <BellIcon className="h-6 w-6" aria-hidden="true" />
                       </button>
 

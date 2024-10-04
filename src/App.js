@@ -19,7 +19,7 @@ import Staff from "./pages/Staff";
 
 const App = () => {
   useEffect(() => {
-    document.title = "APS Stock Management System";
+    document.title = "Reactjs";
 
     // Change the favicon href
     const favicon = document.querySelector("link[rel='icon']");
