@@ -3,6 +3,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
+import Swal from "sweetalert2";
+import { faL } from "@fortawesome/free-solid-svg-icons";
 export default function UpdateStaff({ updateStaffData, updateModalSetting }) {
   const {
     _id,
@@ -32,7 +34,7 @@ export default function UpdateStaff({ updateStaffData, updateModalSetting }) {
     salarytobe: salarytobe,
     perhour: perhour,
     ot: ot,
-    month:month,
+    month: month,
     totalsalary: totalsalary,
     foodadv: foodadv,
     balanceepay: balanceepay,
@@ -49,6 +51,26 @@ export default function UpdateStaff({ updateStaffData, updateModalSetting }) {
   };
 
   const updateStaff = () => {
+    // Validation
+    if (
+      !staff.sname ||
+      !staff.nodwork ||
+      !staff.festivelh ||
+      !staff.totaldays ||
+      !staff.otdays ||
+      !staff.wages ||
+      !staff.salarytobe ||
+      !staff.perhour ||
+      !staff.totalsalary
+    ) {
+      Swal.fire({
+        title: "Warning!",
+        text: "All fields are required",
+        icon: "warning",
+        confirmButtonColor: "#f8bb86",
+      });
+      return; // Stop execution if any field is empty
+    }
     fetch(BASE_URL + `api/staff/update`, {
       method: "POST",
       headers: {
@@ -56,12 +78,27 @@ export default function UpdateStaff({ updateStaffData, updateModalSetting }) {
       },
       body: JSON.stringify(staff),
     })
-      .then((result) => {
-        alert("Staff Updated");
-        setOpen(false);
-        navicate(0);
+      .then((result) => result.json())
+      .then((data) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Staff Updated successfully",
+          icon: "success",
+          confirmButtonColor: "#3082d6",
+        }).then(() => {
+          setOpen(false);
+          navicate(0);
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to update staff",
+          icon: "error",
+          confirmButtonColor: "#d33",
+        });
+      });
   };
 
   return (
@@ -110,7 +147,7 @@ export default function UpdateStaff({ updateStaffData, updateModalSetting }) {
                         as="h3"
                         className="text-lg font-semibold leading-6 text-gray-900 "
                       >
-                        Add Staff
+                        Update Staff
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
@@ -417,7 +454,7 @@ export default function UpdateStaff({ updateStaffData, updateModalSetting }) {
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
                     onClick={updateStaff}
                   >
-                    Add Staff
+                    Update Staff
                   </button>
                   <button
                     type="button"

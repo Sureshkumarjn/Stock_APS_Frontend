@@ -3,6 +3,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
 import { BASE_URL } from "../config";
+import Swal from "sweetalert2";
+
 export default function AddMaterial({
   addMaterialModalSetting,
   handlePageUpdate,
@@ -30,6 +32,27 @@ export default function AddMaterial({
   };
 
   const addMaterial = () => {
+    // Check for empty fields
+    if (
+      !material.date ||
+      !material.name ||
+      !material.mname ||
+      !material.units ||
+      !material.quantity ||
+      !material.size ||
+      !material.thickness ||
+      !material.length ||
+      !material.cstock ||
+      !material.stock
+    ) {
+      Swal.fire({
+        title: "Warning!",
+        text: "All fields are required",
+        icon: "warning",
+        confirmButtonColor: "#f8bb86",
+      });
+      return; // Stop execution if any field is empty
+    }
     fetch(BASE_URL + `api/material/add`, {
       method: "POST",
       headers: {
@@ -37,12 +60,29 @@ export default function AddMaterial({
       },
       body: JSON.stringify(material),
     })
-      .then((result) => {
-        alert("Material ADDED");
-        handlePageUpdate();
-        addMaterialModalSetting();
+      .then((response) => response.json())
+      .then((data) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Material has been added successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#3085d6",
+        }).then(() => {
+          handlePageUpdate();
+          addMaterialModalSetting();
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to add material.",
+          icon: "error",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#3085d6",
+        });
+      });
   };
 
   return (

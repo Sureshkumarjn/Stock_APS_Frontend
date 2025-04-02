@@ -3,7 +3,10 @@ import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
+import Swal from "sweetalert2";
+
 export default function UpdateProduct({
+
   updateProductData,
   updateModalSetting,
 }) {
@@ -31,14 +34,31 @@ export default function UpdateProduct({
   });
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
-  const navicate = useNavigate();
+  const navigate = useNavigate();
 
   const handleInputChange = (key, value) => {
     console.log(key);
     setProduct({ ...product, [key]: value });
   };
 
+
   const updateProduct = () => {
+    // Check for empty fields
+    if (
+      !product.name ||
+      !product.cstock ||
+      !product.stock ||
+      !product.quantity
+    ) {
+      Swal.fire({
+        title: "Warning!",
+        text: "All fields are required",
+        icon: "warning",
+        confirmButtonColor: "#f8bb86",
+      });
+      return; // Stop execution if any field is empty
+    }
+
     fetch(BASE_URL + `api/product/update`, {
       method: "POST",
       headers: {
@@ -46,12 +66,27 @@ export default function UpdateProduct({
       },
       body: JSON.stringify(product),
     })
-      .then((result) => {
-        alert("Product Updated");
-        setOpen(false);
-        navicate(0);
+      .then((result) => result.json()) // Convert response to JSON
+      .then((data) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Product updated successfully",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+        }).then(() => {
+          setOpen(false);
+          navigate(0);
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to update product",
+          icon: "error",
+          confirmButtonColor: "#d33",
+        });
+      });
   };
 
   return (

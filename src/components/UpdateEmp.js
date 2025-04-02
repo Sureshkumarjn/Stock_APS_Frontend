@@ -3,6 +3,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
+import Swal from "sweetalert2";
+
 export default function UpdateEmp({ updateEmployeeData, updateModalSetting }) {
   const { _id, date, empnumber, empname, empcategory, status, empdate, empot } =
     updateEmployeeData;
@@ -26,6 +28,23 @@ export default function UpdateEmp({ updateEmployeeData, updateModalSetting }) {
   };
 
   const updateEmployee = () => {
+    //Check if all fields are filled
+    if (
+      employee.date === "" ||
+      employee.empnumber === "" ||
+      employee.empname === "" ||
+      employee.empcategory === "" ||
+      employee.status === "" ||
+      employee.empdate === "" ||
+      employee.empot === ""
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please fill all fields!",
+      });
+      return;
+    }
     fetch(BASE_URL + `api/employee/update`, {
       method: "POST",
       headers: {
@@ -33,12 +52,27 @@ export default function UpdateEmp({ updateEmployeeData, updateModalSetting }) {
       },
       body: JSON.stringify(employee),
     })
-      .then((result) => {
-        alert("Employee Updated");
-        setOpen(false);
-        navicate(0);
+      .then((result) => result.json())
+      .then((data) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Product updated successfully",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+        }).then(() => {
+          setOpen(false);
+          navicate(0);
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to update product",
+          icon: "error",
+          confirmButtonColor: "#d33",
+        });
+      });
   };
 
   return (

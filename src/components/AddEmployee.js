@@ -4,6 +4,8 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
+import Swal from "sweetalert2";
+
 export default function AddEmployee({
   addEmployeeModalSetting,
   handlePageUpdate,
@@ -29,6 +31,23 @@ export default function AddEmployee({
   };
 
   const addEmployee = () => {
+    if (
+      employee.date === "" ||
+      employee.empnumber === "" ||
+      employee.empname === "" ||
+      employee.empcategory === "" ||
+      employee.status === "" ||
+      employee.empdate === "" ||
+      employee.empot === ""
+    ) {
+      Swal.fire({
+        title: "Warning!",
+        text: "All fields are required",
+        icon: "warning",
+        confirmButtonColor: "#f8bb86",
+      });
+      return;
+    }
     fetch(BASE_URL + `api/employee/add`, {
       method: "POST",
       headers: {
@@ -36,13 +55,30 @@ export default function AddEmployee({
       },
       body: JSON.stringify(employee),
     })
-      .then((result) => {
-        alert("Employee ADDED");
-        handlePageUpdate();
-        addEmployeeModalSetting();
-        navigate(0);
+      .then((response) => response.json())
+      .then((data) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Employee has been added successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#3085d6",
+        }).then(() => {
+          handlePageUpdate();
+          addEmployeeModalSetting();
+          navigate(0);
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to add material.",
+          icon: "error",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#3085d6",
+        });
+      });
   };
 
   return (
@@ -130,7 +166,7 @@ export default function AddEmployee({
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Stock Supplier Name"
+                              placeholder="Employee Number"
                             />
                           </div>
                           <div>
@@ -149,7 +185,7 @@ export default function AddEmployee({
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Stock Category Name"
+                              placeholder="Employee Name"
                             />
                           </div>
                           <div>
@@ -233,7 +269,7 @@ export default function AddEmployee({
                               id="status"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               name="status"
-                              value={status}
+                              // value={status}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }

@@ -4,34 +4,64 @@ import AuthContext from "../AuthContext";
 import UpdateStaff from "../components/UpdateStaff";
 import axios from "axios";
 import { BASE_URL } from "../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2"; // Import SweetAlert
 
 function Staff() {
   const [showStaffModal, setshowStaffModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [updateStaff, setupdateStaff] = useState([]);
-  const [Staff, setAllStaff] = useState([]);
+  const [staffs, setAllStaff] = useState([]);
   const [searchTerm, setSearchTerm] = useState();
   const [updatePage, setUpdatePage] = useState(true);
   const [stores, setAllStores] = useState([]);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 10;
+
+  const [loading, setLoading] = useState(false); // <-- Add loading state
 
   const authContext = useContext(AuthContext);
   console.log("====================================");
   console.log(authContext);
   console.log("====================================");
 
-  useEffect(() => {
-    fetchStaffData();
-    fetchSalesData();
-  }, [updatePage]);
-
   // Fetching Data of All Staff
-  const fetchStaffData = () => {
-    fetch(BASE_URL + `api/staff/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStaff(data);
-      })
-      .catch((err) => console.log(err));
+  const fetchStaffData = async () => {
+    setLoading(true); // Set loading to true when fetching data
+    try {
+      const response = await fetch(
+        `${BASE_URL}api/staff/get/${authContext.user}?page=${currentPage}&limit=${itemsPerPage}`
+      );
+
+      const data = await response.json();
+      setAllStaff(data.staffs);
+      setTotalPages(data.totalPages);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false); // Set loading to false after fetching data
+    }
+  };
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   // Fetching Data of Search Staff
@@ -67,13 +97,39 @@ function Staff() {
 
   // Delete item
   const deleteItem = (id) => {
-    console.log("Staff ID: ", id);
-    console.log(BASE_URL + `api/staff/delete/${id}`);
-    fetch(BASE_URL + `api/staff/delete/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setUpdatePage(!updatePage);
-      });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(BASE_URL + `api/staff/delete/${id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setUpdatePage(!updatePage);
+            Swal.fire({
+              title: "Deleted!",
+              text: "The Staff has been deleted.",
+              icon: "success",
+              confirmButtonText: "OK",
+              confirmButtonColor: "#3085d6",
+            });
+          })
+          .catch((err) => {
+            Swal.fire({
+              title: "Error!",
+              text: "There was an error deleting the product.",
+              icon: "error",
+              confirmButtonText: "OK",
+              confirmButtonColor: "#d33",
+            });
+          });
+      }
+    });
   };
 
   // Handle Page Update
@@ -106,93 +162,14 @@ function Staff() {
     }
   };
 
+  useEffect(() => {
+    fetchStaffData();
+    fetchSalesData();
+  }, [updatePage, currentPage]);
+
   return (
     <div className="col-span-12 lg:col-span-10  flex justify-center">
       <div className=" flex flex-col gap-5 w-11/12">
-        {/* <div className="bg-white rounded p-3">
-          <span className="font-semibold px-4">Overall Inventory</span>
-          <div className=" flex flex-col md:flex-row justify-center items-center  ">
-            <div className="flex flex-col p-10  w-full  md:w-3/12  ">
-              <span className="font-semibold text-blue-600 text-base">
-                Total Material
-              </span>
-              <span className="font-semibold text-gray-600 text-base">
-                {Material.length}
-              </span>
-              <span className="font-thin text-gray-400 text-xs">
-                Last 7 days
-              </span>
-            </div>
-            <div className="flex flex-col gap-3 p-10   w-full  md:w-3/12 sm:border-y-2  md:border-x-2 md:border-y-0">
-              <span className="font-semibold text-yellow-600 text-base">
-                Stores
-              </span>
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    {stores.length}
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Last 7 days
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    $2000
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Revenue
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 p-10  w-full  md:w-3/12  sm:border-y-2 md:border-x-2 md:border-y-0">
-              <span className="font-semibold text-purple-600 text-base">
-                Top Selling
-              </span>
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    5
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Last 7 days
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    $1500
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">Cost</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 p-10  w-full  md:w-3/12  border-y-2  md:border-x-2 md:border-y-0">
-              <span className="font-semibold text-red-600 text-base">
-                Low Stocks
-              </span>
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    12
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Ordered
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    2
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Not in Stock
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
         {showStaffModal && (
           <AddStaff
             addStaffModalSetting={addStaffModalSetting}
@@ -239,219 +216,154 @@ function Staff() {
               </button>
             </div>
           </div>
-          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
-            <thead>
-              <tr>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Staff Name
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  No Of Day Working
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Fesivel Holiday
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Total Days
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  OT Hours
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  PER Day Wages
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Salary To Be
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  PER Hour
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  OT
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Month
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Total Salary
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Food Advance
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Balance E-Pay
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Remark
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Action
-                </th>
-              </tr>
-            </thead>
+          {loading ? (
+            <div className="flex justify-center items-center min-h-screen bg-gray-100">
+              <div className="w-10 h-10 bg-blue-500 animate-ping rounded-lg"></div>
+            </div>
+          ) : (
+            <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+              <thead className="bg-gray-100 text-gray-900">
+                <tr>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Staff Name
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    No Of Day Working
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Fesivel Holiday
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Total Days
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    OT Hours
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    PER Day Wages
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Salary To Be
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    PER Hour
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">OT</th>
+                  <th className="px-6 py-3 text-left font-semibold">Month</th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Total Salary
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Food Advance
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Balance E-Pay
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">Remark</th>
+                  <th className="px-6 py-3 text-left font-semibold">Action</th>
+                </tr>
+              </thead>
 
-            <tbody className="divide-y divide-gray-200">
-              {Staff.map((element, index) => {
-                return (
-                  <tr key={element._id}>
-                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.sname}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.nodwork}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.festivelh}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.totaldays}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.otdays}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.wages}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.salarytobe}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.perhour}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.ot}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.month}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.totalsalary}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.foodadv}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.balanceepay}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.remark}
-                    </td>
-                    {/* <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {staffs.map((element, index) => {
+                  return (
+                    <tr
+                      key={element._id}
+                      className="hover:bg-gray-50 transition duration-200"
+                    >
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.sname}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.nodwork}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.festivelh}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.totaldays}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.otdays}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.wages}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.salarytobe}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.perhour}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">{element.ot}</td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.month}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.totalsalary}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.foodadv}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.balanceepay}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.remark}
+                      </td>
+                      {/* <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.stock > 0 ? "In Stock" : "Not in Stock"}
                     </td> */}
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      <span
-                        className="text-green-700 cursor-pointer"
-                        onClick={() => updateStaffModalSetting(element)}
-                      >
-                        Edit{" "}
-                      </span>
-                      <span
-                        className="text-red-600 px-2 cursor-pointer"
-                        onClick={() => deleteItem(element._id)}
-                      >
-                        Delete
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {/* Table  */}
-        {/* <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
-          <div className="flex justify-between pt-5 pb-3 px-3">
-            <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Material</span>
-              <div className="flex justify-center items-center px-2 border-2 rounded-md ">
-                <img
-                  alt="search-icon"
-                  className="w-5 h-5"
-                  src={require("../assets/search-icon.png")}
-                />
-                <input
-                  className="border-none outline-none focus:border-none text-xs"
-                  type="text"
-                  placeholder="Search here"
-                  value={searchTerm}
-                  onChange={handleSearchTerm}
-                />
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
-                onClick={addProductModalSetting}
-              >
-              
-                Add Product
-              </button>
-            </div>
-          </div>
-          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
-            <thead>
-              <tr>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Material
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Manufacturer
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Stock
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Description
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Availibility
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  More
-                </th>
-              </tr>
-            </thead>
+                      <td className="px-6 py-4 flex items-center space-x-3">
+                        <span
+                          className="text-green-600 hover:text-green-800 cursor-pointer"
+                          onClick={() => updateStaffModalSetting(element)}
+                        >
+                          <FontAwesomeIcon icon={faPenToSquare} />
+                        </span>
+                        <span
+                          className="text-red-600 hover:text-red-800 cursor-pointer"
+                          onClick={() => deleteItem(element._id)}
+                        >
+                          <FontAwesomeIcon icon={faTrashCan} />
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+          {/* Pagination */}
 
-            <tbody className="divide-y divide-gray-200">
-              {Material.map((element, index) => {
-                return (
-                  <tr key={element._id}>
-                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.name}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.manufacturer}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stock}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.description}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stock > 0 ? "In Stock" : "Not in Stock"}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      <span
-                        className="text-green-700 cursor-pointer"
-                        onClick={() => updateMaterialModalSetting(element)}
-                      >
-                        Edit{" "}
-                      </span>
-                      <span
-                        className="text-red-600 px-2 cursor-pointer"
-                        onClick={() => deleteItem(element._id)}
-                      >
-                        Delete
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div> */}
+          <div className="flex justify-between items-center p-4">
+            <button
+              className={`px-4 py-2 rounded bg-gray-300 ${
+                currentPage === 1
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-400"
+              }`}
+              disabled={currentPage === 1}
+              onClick={prevPage}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} /> Previous
+            </button>
+            <span className="font-bold">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className={`px-4 py-2 rounded bg-gray-300 ${
+                currentPage === totalPages
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-400"
+              }`}
+              disabled={currentPage === totalPages}
+              onClick={nextPage}
+            >
+              Next <FontAwesomeIcon icon={faChevronRight} />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

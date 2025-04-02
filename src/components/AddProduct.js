@@ -4,6 +4,7 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
+import Swal from "sweetalert2";
 
 export default function AddProduct({
   addProductModalSetting,
@@ -30,6 +31,22 @@ export default function AddProduct({
   };
 
   const addProduct = () => {
+    // Check for empty fields
+    if (
+      !product.name ||
+      !product.cstock ||
+      !product.stock ||
+      !product.quantity
+    ) {
+      Swal.fire({
+        title: "Warning!",
+        text: "All fields are required",
+        icon: "warning",
+        confirmButtonColor: "#f8bb86",
+      });
+      return; // Stop execution if any field is empty
+    }
+
     // Calculate the new stock based on inwards/outwards
     let updatedStock = parseInt(product.cstock);
     if (product.stock === "Inwards") {
@@ -47,13 +64,28 @@ export default function AddProduct({
       },
       body: JSON.stringify(updatedProduct),
     })
-      .then((result) => {
-        alert("Product ADDED");
-        handlePageUpdate();
-        addProductModalSetting();
-        navigate(0);
+      .then((result) => result.json()) // Convert response to JSON
+      .then((data) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Product added successfully",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+        }).then(() => {
+          handlePageUpdate();
+          addProductModalSetting();
+          navigate(0);
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to add product",
+          icon: "error",
+          confirmButtonColor: "#d33",
+        });
+      });
   };
 
   return (

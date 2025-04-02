@@ -5,6 +5,14 @@ import AuthContext from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2"; // Import SweetAlert
 
 function Employee() {
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
@@ -15,6 +23,13 @@ function Employee() {
   const [updatePage, setUpdatePage] = useState(true);
   const [stores, setAllStores] = useState([]);
   const navigate = useNavigate();
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 10;
+
+  const [loading, setLoading] = useState(false); // <-- Add loading state
 
   const authContext = useContext(AuthContext);
   console.log("====================================");
@@ -27,13 +42,32 @@ function Employee() {
   }, [updatePage]);
 
   // Fetching Data of All Employee
-  const fetchEmployeesData = () => {
-    fetch(BASE_URL + `api/employee/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllEmployees(data);
-      })
-      .catch((err) => console.log(err));
+  const fetchEmployeesData = async () => {
+    setLoading(true); // Show loader
+    try {
+      const response = await fetch(
+        `${BASE_URL}api/employee/get/${authContext.user}?page=${currentPage}&limit=${itemsPerPage}`
+      );
+      const data = await response.json();
+      setAllEmployees(data.employees);
+      setTotalPages(data.totalPages);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false); // Hide loader when done
+    }
+  };
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   // Fetching Data of Search Employee
@@ -49,10 +83,11 @@ function Employee() {
   // Fetching all stores data
   const fetchSalesData = () => {
     fetch(BASE_URL + `api/store/get/${authContext.user}`)
-      .then((response) => response.json())
+      .then((res) => res.json()) // Use 'res' instead of 'response'
       .then((data) => {
-        setAllStores(response.data);
-      });
+        setAllStores(data); // Use 'data' directly
+      })
+      .catch((error) => console.error("Error fetching stores:", error)); // Add error handling
   };
 
   // Modal for Employee ADD
@@ -69,13 +104,40 @@ function Employee() {
 
   // Delete item
   const deleteItem = (id) => {
-    console.log("Employee ID: ", id);
-    console.log(BASE_URL + `api/employee/delete/${id}`);
-    fetch(BASE_URL + `api/employee/delete/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setUpdatePage(!updatePage);
-      });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Call the delete function here
+        fetch(BASE_URL + `api/employee/delete/${id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setUpdatePage(!updatePage);
+            Swal.fire({
+              title: "Deleted!",
+              text: "The product has been deleted.",
+              icon: "success",
+              confirmButtonText: "OK",
+              confirmButtonColor: "#3085d6",
+            });
+          })
+          .catch((err) => {
+            Swal.fire({
+              title: "Error!",
+              text: "There was an error deleting the product.",
+              icon: "error",
+              confirmButtonText: "OK",
+              confirmButtonColor: "#d33",
+            });
+          });
+      }
+    });
   };
 
   // Handle Page Update
@@ -117,100 +179,21 @@ function Employee() {
       const updatedEmployees = employees.map((emp) =>
         emp._id === employeeId ? { ...emp, status: newStatus } : emp
       );
-      setEmployees(updatedEmployees);
-      navicate(0);
+      setAllEmployees(updatedEmployees);
+      navigate(0);
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
 
+  useEffect(() => {
+    fetchEmployeesData();
+    fetchSalesData();
+  }, [updatePage, currentPage]); // Add currentPage here
+
   return (
     <div className="col-span-12 lg:col-span-10  flex justify-center">
       <div className=" flex flex-col gap-5 w-11/12">
-        {/* <div className="bg-white rounded p-3">
-          <span className="font-semibold px-4">Overall Inventory</span>
-          <div className=" flex flex-col md:flex-row justify-center items-center  ">
-            <div className="flex flex-col p-10  w-full  md:w-3/12  ">
-              <span className="font-semibold text-blue-600 text-base">
-                Total Products
-              </span>
-              <span className="font-semibold text-gray-600 text-base">
-                {products.length}
-              </span>
-              <span className="font-thin text-gray-400 text-xs">
-                Last 7 days
-              </span>
-            </div>
-            <div className="flex flex-col gap-3 p-10   w-full  md:w-3/12 sm:border-y-2  md:border-x-2 md:border-y-0">
-              <span className="font-semibold text-yellow-600 text-base">
-                Stores
-              </span>
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    {stores.length}
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Last 7 days
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    $2000
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Revenue
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 p-10  w-full  md:w-3/12  sm:border-y-2 md:border-x-2 md:border-y-0">
-              <span className="font-semibold text-purple-600 text-base">
-                Top Selling
-              </span>
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    5
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Last 7 days
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    $1500
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">Cost</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 p-10  w-full  md:w-3/12  border-y-2  md:border-x-2 md:border-y-0">
-              <span className="font-semibold text-red-600 text-base">
-                Low Stocks
-              </span>
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    12
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Ordered
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    2
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Not in Stock
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
         {showEmployeeModal && (
           <AddEmployee
             addEmployeeModalSetting={addEmployeeModalSetting}
@@ -249,187 +232,130 @@ function Employee() {
               >
                 Add Employee
               </button>
-              {/* <button
+              <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
                 onClick={handleExport}
               >
                 Export
-              </button> */}
-            </div>
-          </div>
-          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
-            <thead>
-              <tr>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Employee Number
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Employee Name
-                </th>
-
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Employee Category
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Status
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Change Active
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Action
-                </th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-200">
-              {employees.map((element, index) => {
-                return (
-                  <tr key={element._id}>
-                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.empnumber}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.empname}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.empcategory}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.status}
-                    </td>
-                    <td>
-                      <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded px-4 py-2 text-center"
-                        onClick={() =>
-                          handleStatusChange(
-                            element._id,
-                            element.status === "Active" ? "Inactive" : "Active"
-                          )
-                        }
-                      >
-                        {element.status === "Active"
-                          ? "Deactivate"
-                          : "Activate"}
-                      </button>
-                    </td>
-
-                    {/* <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stock > 0 ? "In Stock" : "Not in Stock"}
-                    </td> */}
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      <span
-                        className="text-green-700 cursor-pointer"
-                        onClick={() => updateEmployeeModalSetting(element)}
-                      >
-                        Edit{" "}
-                      </span>
-                      <span
-                        className="text-red-600 px-2 cursor-pointer"
-                        onClick={() => deleteItem(element._id)}
-                      >
-                        Delete
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {/* Table  */}
-        {/* <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
-          <div className="flex justify-between pt-5 pb-3 px-3">
-            <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Products</span>
-              <div className="flex justify-center items-center px-2 border-2 rounded-md ">
-                <img
-                  alt="search-icon"
-                  className="w-5 h-5"
-                  src={require("../assets/search-icon.png")}
-                />
-                <input
-                  className="border-none outline-none focus:border-none text-xs"
-                  type="text"
-                  placeholder="Search here"
-                  value={searchTerm}
-                  onChange={handleSearchTerm}
-                />
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
-                onClick={addProductModalSetting}
-              >
-              
-                Add Product
               </button>
             </div>
           </div>
-          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
-            <thead>
-              <tr>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Products
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Manufacturer
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Stock
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Description
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Availibility
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  More
-                </th>
-              </tr>
-            </thead>
+          {loading ? (
+            <div className="flex justify-center items-center min-h-screen bg-gray-100">
+              <div className="w-10 h-10 bg-blue-500 animate-ping rounded-lg"></div>
+            </div>
+          ) : (
+            <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+              <thead className="bg-gray-100 text-gray-900">
+                <tr>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Employee Number
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Employee Name
+                  </th>
 
-            <tbody className="divide-y divide-gray-200">
-              {products.map((element, index) => {
-                return (
-                  <tr key={element._id}>
-                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.name}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.manufacturer}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stock}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.description}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Employee Category
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">Status</th>
+                  <th className="px-6 py-3 text-left font-semibold">
+                    Change Active
+                  </th>
+                  <th className="px-6 py-3 text-left font-semibold">Action</th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {employees.map((element, index) => {
+                  return (
+                    <tr
+                      key={element._id}
+                      className="hover:bg-gray-50 transition duration-200"
+                    >
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.empnumber}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.empname}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.empcategory}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.status}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        <button
+                          className="bg-blue-500 hover:bg-blue-700 text-white me-3 font-bold p-2 text-xs  rounded px-4 py-2 text-center"
+                          onClick={() =>
+                            handleStatusChange(
+                              element._id,
+                              element.status === "Active"
+                                ? "Inactive"
+                                : "Active"
+                            )
+                          }
+                        >
+                          {element.status === "Active"
+                            ? "Deactivate"
+                            : "Activate"}
+                        </button>
+                      </td>
+
+                      {/* <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.stock > 0 ? "In Stock" : "Not in Stock"}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      <span
-                        className="text-green-700 cursor-pointer"
-                        onClick={() => updateProductModalSetting(element)}
-                      >
-                        Edit{" "}
-                      </span>
-                      <span
-                        className="text-red-600 px-2 cursor-pointer"
-                        onClick={() => deleteItem(element._id)}
-                      >
-                        Delete
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div> */}
+                    </td> */}
+                      <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                        <span
+                          className="text-green-700 cursor-pointer"
+                          onClick={() => updateEmployeeModalSetting(element)}
+                        >
+                          <FontAwesomeIcon icon={faPenToSquare} />
+                        </span>
+                        <span
+                          className="text-red-600 px-2 cursor-pointer"
+                          onClick={() => deleteItem(element._id)}
+                        >
+                          <FontAwesomeIcon icon={faTrashCan} />
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+          {/* Pagination */}
+
+          <div className="flex justify-between items-center p-4">
+            <button
+              className={`px-4 py-2 rounded bg-gray-300 ${
+                currentPage === 1
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-400"
+              }`}
+              disabled={currentPage === 1}
+              onClick={prevPage}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} /> Previous
+            </button>
+            <span className="font-bold">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className={`px-4 py-2 rounded bg-gray-300 ${
+                currentPage === totalPages
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-gray-400"
+              }`}
+              disabled={currentPage === totalPages}
+              onClick={nextPage}
+            >
+              Next <FontAwesomeIcon icon={faChevronRight} />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

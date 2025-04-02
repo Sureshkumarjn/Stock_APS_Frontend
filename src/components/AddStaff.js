@@ -3,14 +3,14 @@ import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
 import { BASE_URL } from "../config";
-export default function AddStaff({
-  addStaffModalSetting,
-  handlePageUpdate,
-}) {
+import Swal from "sweetalert2";
+import Staff from "../pages/Staff";
+
+export default function AddStaff({ addStaffModalSetting, handlePageUpdate }) {
   const authContext = useContext(AuthContext);
   const [staff, setStaff] = useState({
     userId: authContext.user,
-    
+
     sname: "",
     nodwork: "",
     festivelh: "",
@@ -19,12 +19,12 @@ export default function AddStaff({
     wages: "",
     salarytobe: "",
     perhour: "",
-    ot:"",
-    month:"",
-    totalsalary:"",
-    foodadv:"",
-    balanceepay:"",
-    remark:"",
+    ot: "",
+    month: "",
+    totalsalary: "",
+    foodadv: "",
+    balanceepay: "",
+    remark: "",
   });
   console.log("----", staff);
   const [open, setOpen] = useState(true);
@@ -34,7 +34,27 @@ export default function AddStaff({
     setStaff({ ...staff, [key]: value });
   };
 
-  const addStaff= () => {
+  const addStaff = () => {
+    // Validation
+    if (
+      !staff.sname ||
+      !staff.nodwork ||
+      !staff.festivelh ||
+      !staff.totaldays ||
+      !staff.otdays ||
+      !staff.wages ||
+      !staff.salarytobe ||
+      !staff.perhour ||
+      !staff.totalsalary
+    ) {
+      Swal.fire({
+        title: "Warning!",
+        text: "All fields are required",
+        icon: "warning",
+        confirmButtonColor: "#f8bb86",
+      });
+      return; // Stop execution if any field is empty
+    }
     fetch(BASE_URL + `api/staff/add`, {
       method: "POST",
       headers: {
@@ -42,12 +62,29 @@ export default function AddStaff({
       },
       body: JSON.stringify(staff),
     })
-      .then((result) => {
-        alert("Staff ADDED");
-        handlePageUpdate();
-        addStaffModalSetting();
+      .then((response) => response.json())
+      .then((data) => {
+        Swal.fire({
+          title: "Success!",
+          text: "Staff has been added successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#3085d6",
+        }).then(() => {
+          handlePageUpdate();
+          addStaffModalSetting();
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to add staff",
+          icon: "error",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#3085d6",
+        });
+      });
   };
 
   return (
@@ -200,7 +237,7 @@ export default function AddStaff({
                               for="quantity"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              PER Day Wages 
+                              PER Day Wages
                             </label>
                             <input
                               type="number"
@@ -295,7 +332,7 @@ export default function AddStaff({
                               for="quantity"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                              Total Salary 
+                              Total Salary
                             </label>
                             <input
                               type="number"
@@ -333,7 +370,7 @@ export default function AddStaff({
                               for="quantity"
                               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                             >
-                            Balance E-Pay
+                              Balance E-Pay
                             </label>
                             <input
                               type="number"
@@ -366,7 +403,6 @@ export default function AddStaff({
                               placeholder="Remark"
                             />
                           </div>
-                         
                         </div>
                         <div className="flex items-center space-x-4">
                           {/* <button
