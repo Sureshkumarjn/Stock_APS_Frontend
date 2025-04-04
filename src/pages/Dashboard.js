@@ -37,9 +37,8 @@ function Dashboard() {
   const [purchaseAmount, setPurchaseAmount] = useState("");
   const [stores, setStores] = useState([]);
   const [products, setProducts] = useState([]);
-  const [staff, setStaff] = useState([]);
-  const [material, setMaterial] = useState([]);
-
+  const [staffs, setStaff] = useState([]);
+  const [materials, setMaterial] = useState([]);
 
   const [chart, setChart] = useState({
     options: {
@@ -173,13 +172,12 @@ function Dashboard() {
             <p>
               <span className="text-2xl font-medium text-gray-900">
                 {" "}
-                {material.length}{" "}
+                {materials?.materials?.length}{" "}
               </span>
             </p>
           </div>
         </article>
 
-       
         <article className="flex flex-col   gap-4 rounded-lg border border-gray-100 bg-white p-6 ">
           <div className="inline-flex gap-2 self-end rounded bg-red-100 p-1 text-red-600">
             <svg
@@ -206,7 +204,7 @@ function Dashboard() {
             <p>
               <span className="text-2xl font-medium text-gray-900 text-center">
                 {" "}
-                {products.length}{" "}
+                {products?.products?.length}
               </span>
 
               {/* <span className="text-xs text-gray-500"> from $404.32 </span> */}
@@ -239,7 +237,7 @@ function Dashboard() {
             <p>
               <span className="text-2xl font-medium text-gray-900">
                 {" "}
-                {staff.length}{" "}
+                {staffs?.staffs?.length}{" "}
               </span>
 
               {/* <span className="text-xs text-gray-500"> from 0 </span> */}

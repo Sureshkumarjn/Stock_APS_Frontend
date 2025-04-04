@@ -12,6 +12,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2"; // Import SweetAlert
+import Employee from "./Employee";
 
 function Material() {
   const [showMaterialModal, setshowMaterialModal] = useState(false);
@@ -221,8 +222,14 @@ function Material() {
           </div>
           {/* Show Loader if Loading */}
           {loading ? (
-            <div className="flex justify-center items-center min-h-screen bg-gray-100">
-              <div className="w-8 h-8 bg-blue-500 animate-ping rounded-lg"></div>
+            <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+              <div className="w-10 h-10 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+              <p className="mt-4 text-gray-700">Loading materials...</p>
+            </div>
+          ) : Material.length === 0 ? (
+            <div className="flex flex-col justify-center items-center bg-gray-50 mt-10 py-10">
+              <img src={require("../assets/noproduct1.png")} alt="" />
+              <p className="text-gray-500 mt-4 text-lg">materials found</p>
             </div>
           ) : (
             <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">

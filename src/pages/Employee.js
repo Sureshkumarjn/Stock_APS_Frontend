@@ -241,91 +241,104 @@ function Employee() {
             </div>
           </div>
           {loading ? (
-            <div className="flex justify-center items-center min-h-screen bg-gray-100">
-              <div className="w-10 h-10 bg-blue-500 animate-ping rounded-lg"></div>
+            <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+              <div className="w-10 h-10 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+              <p className="mt-4 text-gray-700">Loading employees...</p>
+            </div>
+          ) : employees.length === 0 ? (
+            <div className="flex flex-col justify-center items-center bg-gray-50 mt-10 py-10">
+              <img src={require("../assets/noproduct1.png")} alt="" />
+              <p className="text-gray-500 mt-4 text-lg">No products found</p>
             </div>
           ) : (
-            <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
-              <thead className="bg-gray-100 text-gray-900">
-                <tr>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Employee Number
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Employee Name
-                  </th>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+                <thead className="bg-gray-100 text-gray-900">
+                  <tr>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Employee Number
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Employee Name
+                    </th>
 
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Employee Category
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">Status</th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Change Active
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">Action</th>
-                </tr>
-              </thead>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Employee Category
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Change Active
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
 
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {employees.map((element, index) => {
-                  return (
-                    <tr
-                      key={element._id}
-                      className="hover:bg-gray-50 transition duration-200"
-                    >
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.empnumber}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.empname}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.empcategory}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.status}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        <button
-                          className="bg-blue-500 hover:bg-blue-700 text-white me-3 font-bold p-2 text-xs  rounded px-4 py-2 text-center"
-                          onClick={() =>
-                            handleStatusChange(
-                              element._id,
-                              element.status === "Active"
-                                ? "Inactive"
-                                : "Active"
-                            )
-                          }
-                        >
-                          {element.status === "Active"
-                            ? "Deactivate"
-                            : "Activate"}
-                        </button>
-                      </td>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {employees.map((element, index) => {
+                    return (
+                      <tr
+                        key={element._id}
+                        className="hover:bg-gray-50 transition duration-200"
+                      >
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.empnumber}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.empname}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.empcategory}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.status}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white me-3 font-bold p-2 text-xs  rounded px-4 py-2 text-center"
+                            onClick={() =>
+                              handleStatusChange(
+                                element._id,
+                                element.status === "Active"
+                                  ? "Inactive"
+                                  : "Active"
+                              )
+                            }
+                          >
+                            {element.status === "Active"
+                              ? "Deactivate"
+                              : "Activate"}
+                          </button>
+                        </td>
 
-                      {/* <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                        {/* <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.stock > 0 ? "In Stock" : "Not in Stock"}
                     </td> */}
-                      <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                        <span
-                          className="text-green-700 cursor-pointer"
-                          onClick={() => updateEmployeeModalSetting(element)}
-                        >
-                          <FontAwesomeIcon icon={faPenToSquare} />
-                        </span>
-                        <span
-                          className="text-red-600 px-2 cursor-pointer"
-                          onClick={() => deleteItem(element._id)}
-                        >
-                          <FontAwesomeIcon icon={faTrashCan} />
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                          <span
+                            className="text-green-700 cursor-pointer"
+                            onClick={() => updateEmployeeModalSetting(element)}
+                          >
+                            <FontAwesomeIcon icon={faPenToSquare} />
+                          </span>
+                          <span
+                            className="text-red-600 px-2 cursor-pointer"
+                            onClick={() => deleteItem(element._id)}
+                          >
+                            <FontAwesomeIcon icon={faTrashCan} />
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
+
           {/* Pagination */}
 
           <div className="flex justify-between items-center p-4">
