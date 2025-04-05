@@ -225,6 +225,8 @@ function Employee() {
                 />
               </div>
             </div>
+           
+
             <div className="flex gap-4">
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
@@ -255,6 +257,7 @@ function Employee() {
               <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
                 <thead className="bg-gray-100 text-gray-900">
                   <tr>
+                    <th className="px-6 py-3 text-left font-semibold">S.No</th>
                     <th className="px-6 py-3 text-left font-semibold">
                       Employee Number
                     </th>
@@ -284,6 +287,9 @@ function Employee() {
                         key={element._id}
                         className="hover:bg-gray-50 transition duration-200"
                       >
+                        <td className="px-6 py-4 text-gray-900">
+                          {index + 1 + (currentPage - 1) * itemsPerPage}
+                        </td>
                         <td className="px-6 py-4 text-gray-900">
                           {element.empnumber}
                         </td>

@@ -234,56 +234,72 @@ function Inventory() {
               <p className="text-gray-500 mt-4 text-lg">No products found</p>
             </div>
           ) : (
-            <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
-              <thead className="bg-gray-100 text-gray-900">
-                <tr>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Supplier Name
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Category Name
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">Stock</th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Quantity
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">Units</th>
-                  <th className="px-6 py-3 text-left font-semibold">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {products.map((element) => (
-                  <tr
-                    key={element._id}
-                    className="hover:bg-gray-50 transition duration-200"
-                  >
-                    <td className="px-6 py-4 text-gray-900">{element.name}</td>
-                    <td className="px-6 py-4 text-gray-700">
-                      {element.category}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">{element.stock}</td>
-                    <td className="px-6 py-4 text-gray-700">
-                      {element.quantity}
-                    </td>
-                    <td className="px-6 py-4 text-gray-700">{element.units}</td>
-                    <td className="px-6 py-4 flex items-center space-x-3">
-                      <span
-                        className="text-green-600 hover:text-green-800 cursor-pointer"
-                        onClick={() => updateProductModalSetting(element)}
-                      >
-                        <FontAwesomeIcon icon={faPenToSquare} />
-                      </span>
-                      <span
-                        className="text-red-600 hover:text-red-800 cursor-pointer"
-                        onClick={() => deleteItem(element._id)}
-                      >
-                        <FontAwesomeIcon icon={faTrashCan} />
-                      </span>
-                    </td>
+            <>
+             
+
+              <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+                <thead className="bg-gray-100 text-gray-900">
+                  <tr>
+                    <th className="px-6 py-3 text-left font-semibold">S.No</th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Supplier Name
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Category Name
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">Stock</th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Quantity
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">Units</th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Action
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {products.map((element, index) => (
+                    <tr
+                      key={element._id}
+                      className="hover:bg-gray-50 transition duration-200"
+                    >
+                      <td className="px-6 py-4 text-gray-900">
+                        {index + 1 + (currentPage - 1) * itemsPerPage}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {element.name}
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {element.category}
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {element.stock}
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {element.quantity}
+                      </td>
+                      <td className="px-6 py-4 text-gray-700">
+                        {element.units}
+                      </td>
+                      <td className="px-6 py-4 flex items-center space-x-3">
+                        <span
+                          className="text-green-600 hover:text-green-800 cursor-pointer"
+                          onClick={() => updateProductModalSetting(element)}
+                        >
+                          <FontAwesomeIcon icon={faPenToSquare} />
+                        </span>
+                        <span
+                          className="text-red-600 hover:text-red-800 cursor-pointer"
+                          onClick={() => deleteItem(element._id)}
+                        >
+                          <FontAwesomeIcon icon={faTrashCan} />
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
           )}
           {/* Pagination */}
 

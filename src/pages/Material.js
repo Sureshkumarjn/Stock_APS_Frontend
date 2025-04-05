@@ -232,88 +232,98 @@ function Material() {
               <p className="text-gray-500 mt-4 text-lg">materials found</p>
             </div>
           ) : (
-            <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
-              <thead className="bg-gray-100 text-gray-900">
-                <tr>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Supplier Name
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Material Name
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">Size</th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Thickness
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">Length</th>
-                  <th className="px-6 py-3 text-left font-semibold">Stock</th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Current Stock
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">
-                    Quantity
-                  </th>
-                  <th className="px-6 py-3 text-left font-semibold">Units</th>
-                  <th className="px-6 py-3 text-left font-semibold">Action</th>
-                </tr>
-              </thead>
+            <>
+              <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+                <thead className="bg-gray-100 text-gray-900">
+                  <tr>
+                    <th className="px-6 py-3 text-left font-semibold">S.No</th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Supplier Name
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Material Name
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">Size</th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Thickness
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Length
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">Stock</th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Current Stock
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Quantity
+                    </th>
+                    <th className="px-6 py-3 text-left font-semibold">Units</th>
+                    <th className="px-6 py-3 text-left font-semibold">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
 
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {Material.map((element, index) => {
-                  return (
-                    <tr
-                      key={element._id}
-                      className="hover:bg-gray-50 transition duration-200"
-                    >
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.name}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.mname}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.size}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.thickness}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.length}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.stock}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.cstock}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.quantity}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {element.units}
-                      </td>
-                      {/* <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {Material.map((element, index) => {
+                    return (
+                      <tr
+                        key={element._id}
+                        className="hover:bg-gray-50 transition duration-200"
+                      >
+                        <td className="px-6 py-4 text-gray-900">
+                          {index + 1 + (currentPage - 1) * itemsPerPage}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.name}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.mname}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.size}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.thickness}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.length}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.stock}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.cstock}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.quantity}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {element.units}
+                        </td>
+                        {/* <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.stock > 0 ? "In Stock" : "Not in Stock"}
                     </td> */}
-                      <td className="px-6 py-4 text-gray-900">
-                        <span
-                          className="text-green-700 cursor-pointer"
-                          onClick={() => updateMaterialModalSetting(element)}
-                        >
-                          <FontAwesomeIcon icon={faPenToSquare} />
-                        </span>
-                        <span
-                          className="text-red-600 px-2 cursor-pointer"
-                          onClick={() => deleteItem(element._id)}
-                        >
-                          <FontAwesomeIcon icon={faTrashCan} />
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        <td className="px-6 py-4 text-gray-900">
+                          <span
+                            className="text-green-700 cursor-pointer"
+                            onClick={() => updateMaterialModalSetting(element)}
+                          >
+                            <FontAwesomeIcon icon={faPenToSquare} />
+                          </span>
+                          <span
+                            className="text-red-600 px-2 cursor-pointer"
+                            onClick={() => deleteItem(element._id)}
+                          >
+                            <FontAwesomeIcon icon={faTrashCan} />
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </>
           )}
           {/* Pagination */}
           <div className="flex justify-between items-center p-4">
